@@ -48,3 +48,15 @@ return [
 ```
 
 >As you can see, its possible to use ENV variables to override above values. So, if you want to setup your configurations on `.env`, its OK, but don't forget to put that snippet on your `app.php`
+
+### Database setup
+
+Run migrations to setup default database schema:
+
+```bash
+bin/cake migrations migrate -p OauthServer2
+```
+
+That will create 9 new tables, with `oauth_` prefix name.
+
+If you want to customize the structure, you can copy migrations source, edit and run your local migration instead.
