@@ -24,7 +24,6 @@ class SessionsTableTest extends TestCase
      */
     public $fixtures = [
         'plugin.OauthServer2.Sessions',
-        'plugin.OauthServer2.Owners',
         'plugin.OauthServer2.Clients'
     ];
 
