@@ -1,10 +1,13 @@
 <?php
 namespace OauthServer2\Model\Table;
 
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use League\OAuth2\Server\Entities\ClientEntityInterface;
+use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
 
 /**
  * Clients Model
@@ -21,7 +24,7 @@ use Cake\Validation\Validator;
  * @method \OauthServer2\Model\Entity\Client[] patchEntities($entities, array $data, array $options = [])
  * @method \OauthServer2\Model\Entity\Client findOrCreate($search, callable $callback = null, $options = [])
  */
-class ClientsTable extends Table
+class ClientsTable extends Table implements ClientRepositoryInterface
 {
     /**
      * Initialize method
@@ -61,10 +64,10 @@ class ClientsTable extends Table
             ->allowEmptyString('id', 'create');
 
         $validator
-            ->scalar('client_secret')
-            ->maxLength('client_secret', 40)
-            ->requirePresence('client_secret', 'create')
-            ->notEmptyString('client_secret');
+            ->scalar('secret')
+            ->maxLength('secret', 40)
+            ->requirePresence('secret', 'create')
+            ->notEmptyString('secret');
 
         $validator
             ->scalar('name')
@@ -98,5 +101,47 @@ class ClientsTable extends Table
         $rules->add($rules->existsIn(['parent_id'], 'ParentClients'));
 
         return $rules;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClientEntity($clientIdentifier, $grantType = null, $clientSecret = null, $mustValidateSecret = true)
+    {
+        try {
+            $client = $this->get($clientIdentifier);
+        } catch (RecordNotFoundException $e) {
+            return null;
+        }
+
+        if (!$this->canHandleGrant($client, $grantType)) {
+            return null;
+        }
+
+        if ($mustValidateSecret && !hash_equals($client->secret, $clientSecret)) {
+            return null;
+        }
+
+        return $client;
+    }
+
+    /**
+     * Determine if the given client can handle the given grant type.
+     *
+     * @param  ClientEntityInterface  $client
+     * @param  string  $grantType
+     * @return bool
+     */
+    protected function canHandleGrant(ClientEntityInterface $client, $grantType)
+    {
+        if ($grantType === 'client_credentials') {
+            return !empty($client->secret);
+        }
+
+        if (method_exists($client, 'handleGrande')) {
+            return $client->handleGrande($grantType);
+        }
+
+        return false;
     }
 }

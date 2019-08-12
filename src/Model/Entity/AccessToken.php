@@ -2,6 +2,10 @@
 namespace OauthServer2\Model\Entity;
 
 use Cake\ORM\Entity;
+use League\OAuth2\Server\CryptKey;
+use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
+use League\OAuth2\Server\Entities\Traits\EAccessTokenTrait;
+use League\OAuth2\Server\Entities\Traits\TokenEntityTrait;
 
 /**
  * AccessToken Entity
@@ -9,11 +13,14 @@ use Cake\ORM\Entity;
  * @property string $oauth_token
  * @property int $session_id
  * @property int $expires
+ * @property bool $revoked
  *
  * @property \OauthServer2\Model\Entity\Session $session
  */
-class AccessToken extends Entity
+class AccessToken extends Entity implements AccessTokenEntityInterface
 {
+    use AccessTokenTrait, TokenEntityTrait;
+
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -26,6 +33,47 @@ class AccessToken extends Entity
     protected $_accessible = [
         'session_id' => true,
         'expires' => true,
-        'session' => true
+        'session' => true,
+        'revoked' => true
     ];
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifier()
+    {
+        return $this->oauth_token;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setIdentifier(string $identifier)
+    {
+        $this->oauth_token = $identifier;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClient()
+    {
+        return $this->session->client;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExpiryDateTime()
+    {
+        return $this->expires;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setExpiryDateTime(\DateTime $dateTime)
+    {
+        $this->expires = $dateTime;
+    }
 }

@@ -5,6 +5,9 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
+use League\OAuth2\Server\Entities\ClientEntityInterface;
+use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
 
 /**
  * AccessTokens Model
@@ -20,7 +23,7 @@ use Cake\Validation\Validator;
  * @method \OauthServer2\Model\Entity\AccessToken[] patchEntities($entities, array $data, array $options = [])
  * @method \OauthServer2\Model\Entity\AccessToken findOrCreate($search, callable $callback = null, $options = [])
  */
-class AccessTokensTable extends Table
+class AccessTokensTable extends Table implements AccessTokenRepositoryInterface
 {
     /**
      * Initialize method
@@ -73,8 +76,61 @@ class AccessTokensTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
+        $rules->add($rules->isUnique(['oauth_token']));
         $rules->add($rules->existsIn(['session_id'], 'Sessions'));
 
         return $rules;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getNewToken(ClientEntityInterface $clientEntity, array $scopes, $userIdentifier = null)
+    {
+        $token = $this->newEntity();
+        $token->scopes = $scopes;
+        $token->userIdentifier = $userIdentifier;
+
+        return $token;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function persistNewAccessToken(AccessTokenEntityInterface $accessTokenEntity)
+    {
+        $entry = $this->newEntity([
+            'oauth_token' => $accessTokenEntity->getIdentifier(),
+            'user_id' => $accessTokenEntity->getUserIdentifier(),
+            'client_id' => $accessTokenEntity->getClient()->getIdentifier(),
+            'scopes' => $accessTokenEntity->getScopes(),
+            'revoked' => false,
+            'expires_at' => $accessTokenEntity->getExpiryDateTime(),
+        ]);
+
+        $this->save($entry);
+    }
+
+    /**
+     * Revoke an access token.
+     *
+     * @param string $tokenId
+     */
+    public function revokeAccessToken($tokenId)
+    {
+        $this->updateAll(['revoked' => true], ['oauth_token' => $tokenId]);
+    }
+
+    /**
+     * Check if the access token has been revoked.
+     *
+     * @param string $tokenId
+     *
+     * @return bool Return true if this token has been revoked
+     */
+    public function isAccessTokenRevoked($tokenId)
+    {
+        $entry = $this->get($tokenId);
+        return $entry->revoked;
     }
 }

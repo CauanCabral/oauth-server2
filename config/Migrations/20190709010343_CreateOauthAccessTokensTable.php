@@ -20,6 +20,7 @@ class CreateOauthAccessTokensTable extends AbstractMigration
         $table
             ->addColumn('oauth_token', 'string', ['default' => null, 'limit' => 40, 'null' => false])
             ->addColumn('session_id', 'integer', ['default' => null, 'limit' => 11, 'null' => false])
+            ->addColumn('revoked', 'boolean', ['default' => false, 'null' => false])
             ->addColumn('expires', 'integer', ['default' => null, 'limit' => 11, 'null' => false])
             ->addForeignKey('session_id', 'oauth_sessions', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
             ->create();

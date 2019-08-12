@@ -2,7 +2,7 @@
 
 Integration of [league\OAuth2](https://oauth2.thephpleague.com) for [CakePHP](https://cakephp.org) `^3.5`.
 
-Inspired by [uafrica/oauth-server](https://github.com/uafrica/oauth-server).
+Inspired by [uafrica/oauth-server](https://github.com/uafrica/oauth-server) and [laravel/Passaport](https://laravel.com/docs/5.8/passport#introduction).
 
 ## Installation
 
