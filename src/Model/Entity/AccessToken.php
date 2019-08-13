@@ -10,7 +10,7 @@ use League\OAuth2\Server\Entities\Traits\TokenEntityTrait;
 /**
  * AccessToken Entity
  *
- * @property string $oauth_token
+ * @property string $id
  * @property int $session_id
  * @property int $expires
  * @property bool $revoked
@@ -33,8 +33,8 @@ class AccessToken extends Entity implements AccessTokenEntityInterface
     protected $_accessible = [
         'session_id' => true,
         'expires' => true,
+        'revoked' => true,
         'session' => true,
-        'revoked' => true
     ];
 
     /**
@@ -42,7 +42,7 @@ class AccessToken extends Entity implements AccessTokenEntityInterface
      */
     public function getIdentifier()
     {
-        return $this->oauth_token;
+        return $this->id;
     }
 
     /**
@@ -50,7 +50,7 @@ class AccessToken extends Entity implements AccessTokenEntityInterface
      */
     public function setIdentifier(string $identifier)
     {
-        $this->oauth_token = $identifier;
+        $this->id = $identifier;
     }
 
     /**

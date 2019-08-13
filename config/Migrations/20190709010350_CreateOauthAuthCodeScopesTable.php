@@ -15,7 +15,7 @@ class CreateOauthAuthCodeScopesTable extends AbstractMigration
         $table = $this->table('oauth_auth_code_scopes');
 
         $table
-            ->addColumn('auth_code', 'string', ['length' => 40])
+            ->addColumn('auth_code_id', 'string', ['length' => 40])
             ->addColumn('scope_id', 'string', ['length' => 40])
             ->addForeignKey('scope_id', 'oauth_scopes', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
             ->create();

@@ -14,11 +14,11 @@ class CreateOauthAuthCodesTable extends AbstractMigration
     {
         $table = $this->table('oauth_auth_codes', [
             'id' => false,
-            'primary_key' => ['code']
+            'primary_key' => ['id']
         ]);
 
         $table
-            ->addColumn('code', 'string', ['default' => null, 'limit' => 40, 'null' => false])
+            ->addColumn('id', 'string', ['default' => null, 'limit' => 40, 'null' => false])
             ->addColumn('session_id', 'integer', ['default' => null, 'limit' => 11, 'null' => false])
             ->addColumn('redirect_uri', 'string', ['default' => null, 'limit' => 200, 'null' => false])
             ->addColumn('expires', 'integer', ['default' => null, 'limit' => 11, 'null' => false])

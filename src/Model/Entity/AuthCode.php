@@ -6,10 +6,11 @@ use Cake\ORM\Entity;
 /**
  * AuthCode Entity
  *
- * @property string $code
+ * @property string $auth_code_id
  * @property int $session_id
  * @property string $redirect_uri
  * @property int $expires
+ * @property bool $revoked
  *
  * @property \OauthServer2\Model\Entity\Session $session
  */
@@ -25,9 +26,12 @@ class AuthCode extends Entity
      * @var array
      */
     protected $_accessible = [
+        'auth_code_id' => true,
         'session_id' => true,
         'redirect_uri' => true,
         'expires' => true,
+        'revoked' => true,
+        'auth_code' => true,
         'session' => true
     ];
 }

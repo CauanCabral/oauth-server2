@@ -19,8 +19,9 @@ class CreateOauthRefreshTokensTable extends AbstractMigration
 
         $table
             ->addColumn('refresh_token', 'string', ['default' => null, 'limit' => 40, 'null' => false])
-            ->addColumn('oauth_token', 'string', ['default' => null, 'limit' => 40, 'null' => false])
+            ->addColumn('access_token_id', 'string', ['default' => null, 'limit' => 40, 'null' => false])
             ->addColumn('expires', 'integer', ['default' => null, 'limit' => 11, 'null' => false])
+            ->addForeignKey('access_token_id', 'oauth_access_tokens', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
             ->create();
     }
 }

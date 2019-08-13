@@ -9,6 +9,8 @@ use Cake\Validation\Validator;
 /**
  * RefreshTokens Model
  *
+ * @property \OauthServer2\Model\Table\AccessTokensTable|\Cake\ORM\Association\BelongsTo $AccessTokens
+ *
  * @method \OauthServer2\Model\Entity\RefreshToken get($primaryKey, $options = [])
  * @method \OauthServer2\Model\Entity\RefreshToken newEntity($data = null, array $options = [])
  * @method \OauthServer2\Model\Entity\RefreshToken[] newEntities(array $data, array $options = [])
@@ -33,6 +35,12 @@ class RefreshTokensTable extends Table
         $this->setTable('oauth_refresh_tokens');
         $this->setDisplayField('refresh_token');
         $this->setPrimaryKey('refresh_token');
+
+        $this->belongsTo('AccessTokens', [
+            'foreignKey' => 'access_token_id',
+            'joinType' => 'INNER',
+            'className' => 'OauthServer2.AccessTokens'
+        ]);
     }
 
     /**
@@ -49,16 +57,24 @@ class RefreshTokensTable extends Table
             ->allowEmptyString('refresh_token', 'create');
 
         $validator
-            ->scalar('oauth_token')
-            ->maxLength('oauth_token', 40)
-            ->requirePresence('oauth_token', 'create')
-            ->notEmptyString('oauth_token');
-
-        $validator
             ->integer('expires')
             ->requirePresence('expires', 'create')
             ->notEmptyString('expires');
 
         return $validator;
+    }
+
+    /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules)
+    {
+        $rules->add($rules->existsIn(['access_token_id'], 'AccessTokens'));
+
+        return $rules;
     }
 }

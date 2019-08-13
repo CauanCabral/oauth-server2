@@ -13,6 +13,7 @@ use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
  * AccessTokens Model
  *
  * @property \OauthServer2\Model\Table\SessionsTable|\Cake\ORM\Association\BelongsTo $Sessions
+ * @property \OauthServer2\Model\Table\ScopesTable|\Cake\ORM\Association\BelongsToMany $Scopes
  *
  * @method \OauthServer2\Model\Entity\AccessToken get($primaryKey, $options = [])
  * @method \OauthServer2\Model\Entity\AccessToken newEntity($data = null, array $options = [])
@@ -36,13 +37,18 @@ class AccessTokensTable extends Table implements AccessTokenRepositoryInterface
         parent::initialize($config);
 
         $this->setTable('oauth_access_tokens');
-        $this->setDisplayField('oauth_token');
-        $this->setPrimaryKey('oauth_token');
+        $this->setDisplayField('id');
+        $this->setPrimaryKey('id');
 
         $this->belongsTo('Sessions', [
             'foreignKey' => 'session_id',
             'joinType' => 'INNER',
             'className' => 'OauthServer2.Sessions'
+        ]);
+
+        $this->belongsToMany('Scopes', [
+            'foreignKey' => 'scope_id',
+            'className' => 'OauthServer2.Scopes'
         ]);
     }
 
@@ -55,9 +61,9 @@ class AccessTokensTable extends Table implements AccessTokenRepositoryInterface
     public function validationDefault(Validator $validator)
     {
         $validator
-            ->scalar('oauth_token')
-            ->maxLength('oauth_token', 40)
-            ->allowEmptyString('oauth_token', 'create');
+            ->scalar('id')
+            ->maxLength('id', 40)
+            ->allowEmptyString('id', 'create');
 
         $validator
             ->integer('expires')
@@ -76,7 +82,7 @@ class AccessTokensTable extends Table implements AccessTokenRepositoryInterface
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['oauth_token']));
+        $rules->add($rules->isUnique(['id']));
         $rules->add($rules->existsIn(['session_id'], 'Sessions'));
 
         return $rules;
@@ -87,9 +93,15 @@ class AccessTokensTable extends Table implements AccessTokenRepositoryInterface
      */
     public function getNewToken(ClientEntityInterface $clientEntity, array $scopes, $userIdentifier = null)
     {
-        $token = $this->newEntity();
-        $token->scopes = $scopes;
-        $token->userIdentifier = $userIdentifier;
+        $token = $this->newEntity([]);
+        $scopesEntities = $this->Scopes->find()
+            ->where(function (QueryExpression $exp, Query $q) use ($scopes) {
+                return $exp->in('name', $scopes);
+            });
+
+        if ($scopesEntities->count() > 0) {
+            $token->scopes = $scopesEntities->all();
+        }
 
         return $token;
     }
@@ -99,16 +111,7 @@ class AccessTokensTable extends Table implements AccessTokenRepositoryInterface
      */
     public function persistNewAccessToken(AccessTokenEntityInterface $accessTokenEntity)
     {
-        $entry = $this->newEntity([
-            'oauth_token' => $accessTokenEntity->getIdentifier(),
-            'user_id' => $accessTokenEntity->getUserIdentifier(),
-            'client_id' => $accessTokenEntity->getClient()->getIdentifier(),
-            'scopes' => $accessTokenEntity->getScopes(),
-            'revoked' => false,
-            'expires_at' => $accessTokenEntity->getExpiryDateTime(),
-        ]);
-
-        $this->save($entry);
+        $this->save($accessTokenEntity);
     }
 
     /**
@@ -118,7 +121,7 @@ class AccessTokensTable extends Table implements AccessTokenRepositoryInterface
      */
     public function revokeAccessToken($tokenId)
     {
-        $this->updateAll(['revoked' => true], ['oauth_token' => $tokenId]);
+        $this->updateAll(['revoked' => true], ['id' => $tokenId]);
     }
 
     /**

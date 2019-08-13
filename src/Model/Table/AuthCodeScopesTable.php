@@ -36,6 +36,12 @@ class AuthCodeScopesTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->belongsTo('AuthCodes', [
+            'foreignKey' => 'auth_code_id',
+            'joinType' => 'INNER',
+            'className' => 'OauthServer2.AuthCodes'
+        ]);
+
         $this->belongsTo('Scopes', [
             'foreignKey' => 'scope_id',
             'joinType' => 'INNER',
@@ -55,12 +61,6 @@ class AuthCodeScopesTable extends Table
             ->integer('id')
             ->allowEmptyString('id', 'create');
 
-        $validator
-            ->scalar('auth_code')
-            ->maxLength('auth_code', 40)
-            ->requirePresence('auth_code', 'create')
-            ->notEmptyString('auth_code');
-
         return $validator;
     }
 
@@ -74,6 +74,7 @@ class AuthCodeScopesTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['scope_id'], 'Scopes'));
+        $rules->add($rules->existsIn(['auth_code_id'], 'AuthCodes'));
 
         return $rules;
     }

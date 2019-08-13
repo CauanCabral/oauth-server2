@@ -7,8 +7,10 @@ use Cake\ORM\Entity;
  * RefreshToken Entity
  *
  * @property string $refresh_token
- * @property string $oauth_token
+ * @property string $access_token_id
  * @property int $expires
+ *
+ * @property \OauthServer2\Model\Entity\AccessToken $access_token
  */
 class RefreshToken extends Entity
 {
@@ -22,7 +24,8 @@ class RefreshToken extends Entity
      * @var array
      */
     protected $_accessible = [
-        'oauth_token' => true,
-        'expires' => true
+        'access_token_id' => true,
+        'expires' => true,
+        'access_token' => true,
     ];
 }

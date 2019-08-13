@@ -42,7 +42,7 @@ class SessionScopesFixture extends TestFixture
             [
                 'id' => 1,
                 'session_id' => 1,
-                'scope_id' => 'Lorem ipsum dolor sit amet'
+                'scope_id' => 'c8478d33-c892-4f6a-ad64-9acf2642ed82'
             ],
         ];
         parent::init();

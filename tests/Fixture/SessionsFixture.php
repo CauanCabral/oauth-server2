@@ -44,7 +44,7 @@ class SessionsFixture extends TestFixture
                 'id' => 1,
                 'owner_model' => 'Lorem ipsum dolor sit amet',
                 'owner_id' => 'Lorem ipsum dolor ',
-                'client_id' => 'Lorem ipsum dolor ',
+                'client_id' => '7ce13809-5c6a-48a5-892e-58c42bb5c85c',
                 'client_redirect_uri' => 'Lorem ipsum dolor sit amet'
             ],
         ];

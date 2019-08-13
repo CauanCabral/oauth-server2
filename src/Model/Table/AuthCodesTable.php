@@ -33,8 +33,8 @@ class AuthCodesTable extends Table
         parent::initialize($config);
 
         $this->setTable('oauth_auth_codes');
-        $this->setDisplayField('code');
-        $this->setPrimaryKey('code');
+        $this->setDisplayField('id');
+        $this->setPrimaryKey('id');
 
         $this->belongsTo('Sessions', [
             'foreignKey' => 'session_id',
@@ -52,9 +52,9 @@ class AuthCodesTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-            ->scalar('code')
-            ->maxLength('code', 40)
-            ->allowEmptyString('code', 'create');
+            ->scalar('id')
+            ->maxLength('id', 40)
+            ->allowEmptyString('id', 'create');
 
         $validator
             ->scalar('redirect_uri')

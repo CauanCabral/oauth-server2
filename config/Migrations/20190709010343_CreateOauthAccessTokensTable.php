@@ -14,11 +14,11 @@ class CreateOauthAccessTokensTable extends AbstractMigration
     {
         $table = $this->table('oauth_access_tokens', [
             'id' => false,
-            'primary_key' => ['oauth_token']
+            'primary_key' => ['id']
         ]);
 
         $table
-            ->addColumn('oauth_token', 'string', ['default' => null, 'limit' => 40, 'null' => false])
+            ->addColumn('id', 'string', ['default' => null, 'limit' => 40, 'null' => false])
             ->addColumn('session_id', 'integer', ['default' => null, 'limit' => 11, 'null' => false])
             ->addColumn('revoked', 'boolean', ['default' => false, 'null' => false])
             ->addColumn('expires', 'integer', ['default' => null, 'limit' => 11, 'null' => false])

@@ -22,7 +22,7 @@ class AuthCodeScopesFixture extends TestFixture
     // @codingStandardsIgnoreStart
     public $fields = [
         'id' => ['type' => 'integer', 'length' => 10, 'autoIncrement' => true, 'default' => null, 'null' => false, 'comment' => null, 'precision' => null, 'unsigned' => null],
-        'auth_code' => ['type' => 'string', 'length' => 40, 'default' => null, 'null' => false, 'collate' => null, 'comment' => null, 'precision' => null, 'fixed' => null],
+        'auth_code_id' => ['type' => 'string', 'length' => 40, 'default' => null, 'null' => false, 'collate' => null, 'comment' => null, 'precision' => null, 'fixed' => null],
         'scope_id' => ['type' => 'string', 'length' => 40, 'default' => null, 'null' => false, 'collate' => null, 'comment' => null, 'precision' => null, 'fixed' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
@@ -40,8 +40,8 @@ class AuthCodeScopesFixture extends TestFixture
         $this->records = [
             [
                 'id' => 1,
-                'auth_code' => 'Lorem ipsum dolor sit amet',
-                'scope_id' => 'Lorem ipsum dolor sit amet'
+                'auth_code_id' => '8112a496-c3e3-47c9-a9f2-0caa0d73c338',
+                'scope_id' => 'c8478d33-c892-4f6a-ad64-9acf2642ed82'
             ],
         ];
         parent::init();

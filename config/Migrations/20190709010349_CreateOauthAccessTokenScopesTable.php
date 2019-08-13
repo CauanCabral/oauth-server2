@@ -15,8 +15,9 @@ class CreateOauthAccessTokenScopesTable extends AbstractMigration
         $table = $this->table('oauth_access_token_scopes');
 
         $table
-            ->addColumn('oauth_token', 'string', ['length' => 40])
+            ->addColumn('access_token_id', 'string', ['default' => null, 'limit' => 40, 'null' => false])
             ->addColumn('scope_id', 'string', ['length' => 40])
+            ->addForeignKey('access_token_id', 'oauth_access_tokens', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
             ->addForeignKey('scope_id', 'oauth_scopes', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
             ->create();
     }
